@@ -131,31 +131,14 @@ void visit_Node(Maze *this_maze, Stack *this_stack, short x, short y,
         else if (dir == SOUTH && x != MAZE_SIZE-1) eastwall = TRUE;
         else if (dir == WEST && y != MAZE_SIZE-1) southwall = TRUE;
     }
-    /* push to stack the cell on other side of wall if valid 
-        sets the walls as specified by the values checked above */
-    if (northwall) {
-        if (this_node->row != 0){
-            set_wall(this_node, NORTH);
-        }
-    }
-    if (eastwall) {
-        if (this_node->column != MAZE_SIZE-1){
-            set_wall(this_node, EAST);
-        }
-    }
-    if (southwall) {
-        if (this_node->row != MAZE_SIZE-1){
-            set_wall(this_node, SOUTH);
-        }
-    }
-    if (westwall) {
-        if (this_node->column != 0){
-            set_wall(this_node, WEST);
-        }
-    }
+    // ("Checking walls...");
+    if (northwall && this_node->row != 0) set_wall(this_node, NORTH);
+    if (eastwall && this_node->column != MAZE_SIZE-1) set_wall(this_node, EAST);
+    if (southwall && this_node->row != MAZE_SIZE-1) set_wall(this_node, SOUTH);
+    if (westwall && this_node->column != 0) set_wall(this_node, WEST);
     
+    // ("Updating floodval...");
     push(this_stack, this_node);
-        
     /* pop until the stack is empty, and call flood_fill on that node */  
     while (!is_empty_Stack(this_stack)) {
         pop(this_stack, &this_node);

@@ -248,6 +248,7 @@ void set_value(Node * this_node, const short value) {
 void set_visited(Node *this_node) {
 	//set visited flag flood value to specified value
 	this_node->visited = TRUE;
+	
 }
 
 /* Function for setting the walls of this node */
