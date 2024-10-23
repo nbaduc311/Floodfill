@@ -82,16 +82,16 @@ typedef struct Stack {
 Node *new_Node(const short x, const short y);
 void delete_Node(Node **npp);
 void flood_fill(Maze * this_maze,Node *this_node, Stack *this_stack,const short reflood_flag);
-void set_wall(Node * this_node, const short dir);
 void set_value(Node *this_node, const short value);
-void set_visited (Node * this_node);
-short get_smallest_neighbor_dir(Node * this_node, const short preferred_dir);
+void set_wall(Node * this_node, const short dir);
+void set_visited(Node * this_node);
 
 // Floodfill Helper Functions
 short get_smallest_neighbor(Node * this_node);
+short get_smallest_neighbor_dir(Node * this_node, const short preferred_dir);
 short floodval_check(Node * this_node) ;
 void update_floodval(Node * this_node);
-void push_open_neighbors(Maze * this_maze,Node * this_node, Stack * this_stack);
+void push_neighbors(Maze * this_maze,Node * this_node, Stack * this_stack);
 
 // Maze Functions
 Maze * new_Maze();
@@ -106,5 +106,6 @@ void pop(Stack *this_stack, Node **npp);
 void push(Stack *this_stack, Node *this_node);
 
 void logmess(char* text);
+void lognum(short i);
 
 #endif /* Floodfill_H_ */

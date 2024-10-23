@@ -7,6 +7,10 @@ void logmess(char* text) {
     fprintf(stderr, "%s\n", text);
     fflush(stderr);
 }
+void lognum(short i) {
+    fprintf(stderr, "%d\n", i);
+    fflush(stderr);
+}
 /* helper function for flood_fill 
    checks if this node already fulfills flood value requirements*/
 short floodval_check(Node * this_node) {
@@ -20,54 +24,20 @@ short floodval_check(Node * this_node) {
 void update_floodval(Node * this_node) {
 	/* set this node's value to 1 + min open adjascent cell */
 	this_node->floodval = get_smallest_neighbor(this_node) + 1;
-	logmess("Floodfilling...");
-
+	// logmess("Floodfilling");
 	API_setNumber(this_node->column, MAZE_SIZE - 1 - this_node->row, this_node->floodval);
 }
 /*** Constructors and Destructors for: Node, Maze, Stack ***/
 /* pushes the open neighboring cells of this node to the stack */
 void push_neighbors(Maze * this_maze,Node * this_node, Stack *this_stack) {
-	// short x = this_node->column;
-	// short y = this_node->row;
-	// if (y != 0) {
-	// 	if (y == 9){
-	// 		if (x != 8 && x != 7){
-	// 			push(this_stack, this_maze->map[y-1][x]);
-	// 		}
-	// 	}
-	// } 
-	// if (x != MAZE_SIZE-1) {
-	// 	if (x == 6){
-	// 		if (y != 7 && y != 8){
-	// 			push(this_stack, this_maze->map[y][x+1]);
-	// 		}
-	// 	}
-	// }
-	// if (y != MAZE_SIZE-1) {
-	// 	if (y == 6){
-	// 		if (x != 7 && x != 8){
-	// 			push(this_stack, this_maze->map[y+1][x]);
-	// 		}
-	// 	}
-	// }
-	// if (x != 0) {
-	// 	if (x == 9){
-	// 		if (y != 7 && y != 8){
-	// 			push(this_stack, this_maze->map[y][x-1]);
-	// 		}
-	// 	}
-	// }
-	if (this_node->left != NULL && this_node->left->right != NULL) 
-		push(this_stack, this_node->left);
+	/* push open neighbors to stack */
+	short x = this_node->column;
+	short y = this_node->row;
 
-	if (this_node->right != NULL && this_node->right->left != NULL) 
-		push(this_stack, this_node->right);
-
-	if (this_node->up != NULL && this_node->up->down != NULL) 
-		push(this_stack, this_node->up);
-
-	if (this_node->down != NULL && this_node->down->up != NULL) 
-		push(this_stack, this_node->down);
+	if (x > 0 ) push(this_stack, this_maze->map[y][x-1]);
+	if (x < MAZE_SIZE - 1) push(this_stack, this_maze->map[y][x+1]);
+	if (y > 0) push(this_stack, this_maze->map[y-1][x]);
+	if (y < MAZE_SIZE - 1) push(this_stack, this_maze->map[y+1][x]);
 }
 //Node constructor
 Node *new_Node(const short x, const short y) {
@@ -220,20 +190,19 @@ short get_smallest_neighbor_dir(Node *this_node, const short preferred_dir) {
 /* main function for updating the flood values of this node */
 void flood_fill(Maze * this_maze,Node * this_node, Stack * this_stack,const short reflood_flag) {
 	short status = FALSE; 
-	if (!reflood_flag) 
-		if (this_node->row == MAZE_SIZE / 2 || this_node->row == MAZE_SIZE / 2 - 1) 
-    		if (this_node->column == MAZE_SIZE / 2 || this_node->column == MAZE_SIZE / 2 - 1) 
-    			return;
-
+	if (!reflood_flag){
+		if (this_node->row == MAZE_SIZE / 2 || this_node->row == MAZE_SIZE / 2 - 1){
+    		if (this_node->column == MAZE_SIZE / 2 || this_node->column == MAZE_SIZE / 2 - 1) return;
+		}
+	}
     /* we want to avoid flooding the goal values - this is reverse */
-	if (reflood_flag) 
-		if (this_node->row == START_X && this_node->column == START_Y)
-    		return;
+	if (reflood_flag) {
+		if (this_node->row == START_Y && this_node->column == START_X)	return;
+	}
 
 	status = floodval_check(this_node);			
 	/* if no, update curent cell's flood values, 
 	   then push open adjascent neighbors to stack. */
-	// API_setNumber(this_node->column,MAZE_SIZE -1 - this_node->row, status);
 	
 	if (status == FALSE) {
 		update_floodval(this_node); /* Update floodval to 1 + min open neighbor */
@@ -243,12 +212,13 @@ void flood_fill(Maze * this_maze,Node * this_node, Stack * this_stack,const shor
 /* Function for setting this node's floodval to a specific value */
 void set_value(Node * this_node, const short value) {
 	this_node->floodval = value;
+	API_setNumber(this_node->column, MAZE_SIZE - 1 - this_node->row, this_node->floodval);
 }
 
 void set_visited(Node *this_node) {
 	//set visited flag flood value to specified value
 	this_node->visited = TRUE;
-	
+	API_setColor(this_node->column, MAZE_SIZE - 1 - this_node->row, 'R');
 }
 
 /* Function for setting the walls of this node */
@@ -289,7 +259,7 @@ void print_maze(const Maze * this_maze) {
 	for (i = 0; i < MAZE_SIZE; ++i) {
 		for (j = 0; j < MAZE_SIZE; ++j) {
 			// API_setColor(i, j, 'R');
-			API_setNumber(i, j, this_maze->map[i][j]->floodval);
+			API_setNumber(j, i, this_maze->map[MAZE_SIZE -1-i][j]->floodval);
 		} 
 	}
 }
